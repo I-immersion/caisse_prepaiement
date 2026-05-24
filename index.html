@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LUMIIA Caisse Prépaiement v1.1 -->
+<!-- LUMIIA Caisse Prépaiement v1.2 -->
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ===================================================================
-   LUMIIA Caisse Prépaiement v1.1
+   LUMIIA Caisse Prépaiement v1.2
    - Vue CAISSE : tablette portrait 800x1280, mise à l'échelle.
    - Vue CLIENT : page responsive en lecture seule (?s=<sessionId>).
    =================================================================== */
@@ -28,16 +28,16 @@ body.client{overflow:auto;height:auto;}
 [data-state="crit"]{--accent:#ef4d44;--accent-soft:rgba(239,77,68,.16);}
 
 /* ====================== VUE CAISSE ====================== */
-#fit{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;}
-.stage{width:800px;height:1280px;position:relative;flex:none;transform-origin:center;
+.op{position:relative;width:100%;height:100dvh;overflow:hidden;
   background:radial-gradient(620px 420px at 50% -60px,
     color-mix(in srgb,var(--accent) 22%,transparent),transparent 70%),#0e0e12;
-  display:flex;flex-direction:column;padding:22px;gap:16px;
+  display:flex;flex-direction:column;padding:clamp(12px,2.6vw,22px);gap:clamp(10px,1.8vw,16px);
   transition:background 700ms ease;--accent:#3ad07e;--accent-soft:rgba(58,208,126,.14);}
 
-.head{position:relative;flex:none;border:1px solid #1f1f27;border-radius:24px;
-  background:linear-gradient(180deg,#15151c,#101015);padding:24px 26px 22px;}
-.head .toprow{display:flex;justify-content:space-between;align-items:flex-start;}
+.head{position:relative;flex:none;border:1px solid #1f1f27;border-radius:clamp(18px,3vw,24px);
+  background:linear-gradient(180deg,#15151c,#101015);padding:clamp(15px,3.6vw,24px) clamp(16px,4vw,26px) clamp(14px,3vw,22px);}
+.head .toprow{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.head-actions{display:flex;gap:9px;flex:none;}
 .brand{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:#6a6a78;
   font-weight:600;display:flex;align-items:center;gap:9px;}
 .dot{width:8px;height:8px;border-radius:50%;background:#4a4a55;flex:none;
@@ -46,13 +46,20 @@ body.client{overflow:auto;height:auto;}
 .sessname{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:21px;
   color:#e9e9ef;margin-top:3px;max-width:560px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .sessname.empty{color:#5a5a68;font-style:italic;font-weight:500;}
-.gear{flex:none;width:56px;height:56px;border-radius:16px;border:none;background:#1c1c25;
-  color:#cfcfda;font-size:24px;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;transition:transform .12s;}
-.gear:active{transform:scale(.9);}
+.gear{flex:none;width:clamp(46px,12vw,56px);height:clamp(46px,12vw,56px);border-radius:14px;border:none;
+  background:#1c1c25;color:#cfcfda;font-size:clamp(20px,5.5vw,24px);display:flex;align-items:center;
+  justify-content:center;cursor:pointer;transition:transform .12s;}
+.gear:active,.histToggle:active{transform:scale(.9);}
+.histToggle{display:none;flex:none;height:clamp(46px,12vw,56px);padding:0 14px;gap:8px;border:none;
+  border-radius:14px;background:#1c1c25;color:#cfcfda;cursor:pointer;font-family:'Hanken Grotesk',sans-serif;
+  font-weight:700;font-size:14px;align-items:center;justify-content:center;transition:transform .12s;}
+.histToggle .ic{font-size:19px;}
+.histToggle .badge{background:var(--accent);color:#0a0a0c;border-radius:8px;font-weight:800;font-size:12px;
+  min-width:19px;height:19px;display:flex;align-items:center;justify-content:center;padding:0 5px;}
+.histToggle .badge:empty{display:none;}
 
-.balance-wrap{margin-top:14px;display:flex;align-items:baseline;gap:14px;}
-.balance{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:96px;
+.balance-wrap{margin-top:clamp(8px,2vw,14px);display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
+.balance{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(50px,15vw,96px);
   line-height:.92;letter-spacing:-.03em;color:var(--accent);font-variant-numeric:tabular-nums;
   transition:color 700ms ease;text-shadow:0 0 50px color-mix(in srgb,var(--accent) 35%,transparent);}
 .balance-label{font-size:13px;letter-spacing:.16em;text-transform:uppercase;
@@ -60,16 +67,16 @@ body.client{overflow:auto;height:auto;}
 [data-state="crit"] .balance{animation:critpulse 1.5s ease-in-out infinite;}
 @keyframes critpulse{0%,100%{opacity:1;}50%{opacity:.5;}}
 
-.gauge{margin-top:20px;position:relative;height:26px;border-radius:13px;
+.gauge{margin-top:clamp(14px,3vw,20px);position:relative;height:clamp(20px,4.4vw,26px);border-radius:13px;
   background:#08080c;border:1px solid #232330;overflow:hidden;}
 .gauge-fill{position:absolute;inset:0;width:0%;border-radius:13px;
   background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 88%,white 12%),var(--accent));
   box-shadow:0 0 22px color-mix(in srgb,var(--accent) 55%,transparent) inset;
   transition:width 600ms cubic-bezier(.22,.61,.36,1),background 700ms ease;}
 .gauge-tick{position:absolute;top:0;bottom:0;width:2px;background:#0a0a0e99;transform:translateX(-1px);}
-.gauge-tick span{position:absolute;top:30px;transform:translateX(-50%);
+.gauge-tick span{position:absolute;top:calc(100% + 4px);transform:translateX(-50%);
   font-size:10px;font-weight:600;color:#6a6a78;white-space:nowrap;}
-.gaugestats{margin-top:30px;display:flex;gap:22px;font-size:13px;color:#83838f;}
+.gaugestats{margin-top:clamp(22px,5vw,30px);display:flex;gap:20px;font-size:13px;color:#83838f;}
 .gaugestats b{color:#c9c9d3;font-weight:600;font-variant-numeric:tabular-nums;}
 
 .body{flex:1;display:flex;gap:16px;min-height:0;}
@@ -99,9 +106,9 @@ body.client{overflow:auto;height:auto;}
   border:1px solid #1f1f27;border-radius:22px;background:#101015;padding:18px 16px;min-height:0;}
 .pad{flex:1;display:flex;flex-wrap:wrap;gap:13px;align-content:flex-start;
   justify-content:center;overflow-y:auto;}
-.qbtn{flex:0 0 132px;height:118px;border-radius:17px;cursor:pointer;
+.qbtn{flex:0 0 clamp(96px,27vw,132px);height:clamp(78px,11.5vh,118px);border-radius:16px;cursor:pointer;
   border:1px solid #2a2a36;background:linear-gradient(180deg,#1d1d26,#171720);
-  color:#f1f1f6;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:30px;
+  color:#f1f1f6;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:clamp(21px,5.6vw,30px);
   font-variant-numeric:tabular-nums;display:flex;align-items:center;justify-content:center;
   transition:transform .09s,box-shadow .12s,border-color .12s;}
 .qbtn:active{transform:scale(.94);border-color:var(--accent);
@@ -109,8 +116,25 @@ body.client{overflow:auto;height:auto;}
 .qbtn.flash{animation:qflash .4s ease;}
 @keyframes qflash{0%{box-shadow:0 0 0 4px var(--accent-soft);}100%{box-shadow:0 0 0 0 transparent;}}
 .qbtn.other{background:#13131a;border:1px dashed #38384a;color:var(--accent);
-  font-family:'Hanken Grotesk',sans-serif;font-size:18px;font-weight:700;flex-direction:column;gap:4px;}
-.qbtn.other .ic{font-size:26px;}
+  font-family:'Hanken Grotesk',sans-serif;font-size:clamp(14px,3.6vw,18px);font-weight:700;flex-direction:column;gap:3px;}
+.qbtn.other .ic{font-size:clamp(20px,5vw,26px);}
+
+/* Tiroir historique + bouton (mode telephone) */
+.histClose{display:none;width:34px;height:34px;border-radius:9px;border:none;background:#22222c;
+  color:#9a9aa6;font-size:17px;cursor:pointer;align-items:center;justify-content:center;}
+.histbackdrop{position:fixed;inset:0;background:rgba(6,6,9,.66);z-index:29;opacity:0;
+  pointer-events:none;transition:opacity .28s;}
+.histbackdrop.show{opacity:1;pointer-events:auto;}
+@media (max-width:619px){
+  .histToggle{display:flex;}
+  .histClose{display:flex;}
+  .histcol{position:fixed;top:0;left:0;bottom:0;width:86vw;max-width:330px;z-index:30;
+    border-radius:0 22px 22px 0;transform:translateX(-101%);
+    transition:transform .28s cubic-bezier(.22,.61,.36,1);box-shadow:18px 0 50px rgba(0,0,0,.55);}
+  .histcol.open{transform:none;}
+  .histcol .count{display:none;}
+}
+@media (min-width:620px){ .histbackdrop{display:none;} }
 
 .delta{position:absolute;left:50%;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;
   font-size:34px;color:var(--accent);pointer-events:none;transform:translateX(-50%);
@@ -244,15 +268,17 @@ body.client{overflow:auto;height:auto;}
 <body>
 
 <!-- ============================ VUE CAISSE ============================ -->
-<div id="fit">
-  <div class="stage" id="stage" data-state="ok">
+<div class="op" id="stage" data-state="ok">
     <header class="head">
       <div class="toprow">
-        <div>
+        <div style="min-width:0">
           <div class="brand"><span class="dot" id="opDot"></span>LUMIIA · Caisse Prépaiement</div>
           <div class="sessname empty" id="sessName">Aucune cagnotte</div>
         </div>
-        <button class="gear" id="gearBtn" aria-label="Réglages">⚙</button>
+        <div class="head-actions">
+          <button class="histToggle" id="histToggle" aria-label="Historique"><span class="ic">☰</span><span>Historique</span><span class="badge" id="histBadge"></span></button>
+          <button class="gear" id="gearBtn" aria-label="Réglages">⚙</button>
+        </div>
       </div>
       <div class="balance-wrap">
         <div class="balance" id="balance">0,00&nbsp;€</div>
@@ -266,8 +292,9 @@ body.client{overflow:auto;height:auto;}
     </header>
 
     <div class="body">
-      <section class="histcol">
-        <div class="col-title">Historique <span class="count" id="histCount"></span></div>
+      <section class="histcol" id="histCol">
+        <div class="col-title"><span>Historique</span>
+          <span style="display:flex;align-items:center;gap:8px"><span class="count" id="histCount"></span><button class="histClose" id="histClose">✕</button></span></div>
         <div class="histlist" id="histList"></div>
       </section>
       <section class="padcol">
@@ -347,7 +374,7 @@ body.client{overflow:auto;height:auto;}
           <div class="sub" style="margin-bottom:14px">Termine la cagnotte en cours et en démarre une nouvelle. L'historique actuel est archivé.</div>
           <button class="btn btn-danger" id="closeSess">Clôturer et nouvelle cagnotte</button>
         </div>
-        <div class="modal-foot"><span>LUMIIA Caisse Prépaiement</span><span>v1.1</span></div>
+        <div class="modal-foot"><span>LUMIIA Caisse Prépaiement</span><span>v1.2</span></div>
       </div>
     </div>
 
@@ -392,8 +419,8 @@ body.client{overflow:auto;height:auto;}
 }</code>
       </div>
     </div>
+    <div class="histbackdrop" id="histBackdrop"></div>
   </div>
-</div>
 
 <!-- ============================ VUE CLIENT ============================ -->
 <div id="clientView" class="hidden" data-state="ok">
@@ -416,7 +443,7 @@ body.client{overflow:auto;height:auto;}
 
     <div class="csection">Historique <span id="cHistCount"></span></div>
     <div class="chist" id="cHistList"></div>
-    <div class="cfoot">LUMIIA Caisse Prépaiement · v1.1</div>
+    <div class="cfoot">LUMIIA Caisse Prépaiement · v1.2</div>
   </div>
   <div class="cmsg hidden" id="cMsg"></div>
 </div>
@@ -2788,14 +2815,17 @@ function sums(session){
 }
 function tweenNumber(el, store, key, to){
   const from = store[key];
-  if (from === undefined || from === to){ el.textContent = euro(to); store[key] = to; return; }
   store[key] = to;
-  const dur = 460, t0 = performance.now();
-  (function step(now){
+  el.textContent = euro(to);                       // valeur exacte affichee d'emblee
+  if (from === undefined || from === to) return;   // l'animation ci-dessous est purement decorative :
+  const dur = 460, t0 = performance.now();         // si rAF est throttle (onglet en fond), la bonne valeur est deja la
+  function step(now){
     const p = Math.min(1,(now-t0)/dur), e = 1-Math.pow(1-p,3);
     el.textContent = euro(Math.round(from + (to-from)*e));
     if (p < 1) requestAnimationFrame(step);
-  })(performance.now());
+    else el.textContent = euro(to);
+  }
+  requestAnimationFrame(step);
 }
 function renderTicks(box, credCents, tickClass){
   box.innerHTML = '';
@@ -2829,7 +2859,7 @@ else runOperator();
    ============================================================ */
 function runClient(sid){
   document.body.classList.add('client');
-  $('fit').classList.add('hidden');
+  $('stage').classList.add('hidden');
   $('clientView').classList.remove('hidden');
   const cStore = {};
   onValue(ref(db, ROOT + '/sessions/' + sid), snap => {
@@ -2885,7 +2915,7 @@ function runClient(sid){
 function runOperator(){
   const QUICK_CENTS = []; for (let c=100;c<=1000;c+=50) QUICK_CENTS.push(c);
   const store = {};
-  let activeId = null, session = null, sessionUnsub = null;
+  let activeId, session = null, sessionUnsub = null;   // activeId undefined au depart : le 1er snapshot null doit declencher render()
   let firstPaint = true, lastThreshold = null, lastDeleted = null;
 
   /* ---- Écoute Firebase ---- */
@@ -2939,6 +2969,7 @@ function runOperator(){
     const list = $('histList');
     const txs = txArray(session).reverse();
     $('histCount').textContent = txs.length ? txs.length : '';
+    $('histBadge').textContent = txs.length ? txs.length : '';
     if (!txs.length){
       list.innerHTML = '<div class="hist-empty">Aucune transaction.<br>Les consommations apparaîtront ici.</div>';
       return;
@@ -3113,6 +3144,14 @@ function runOperator(){
     if (b) deleteTx(b.dataset.del);
   });
 
+  /* ---- Tiroir historique (telephone) ---- */
+  const histCol = $('histCol'), histBackdrop = $('histBackdrop');
+  function openHist(){ histCol.classList.add('open'); histBackdrop.classList.add('show'); }
+  function closeHist(){ histCol.classList.remove('open'); histBackdrop.classList.remove('show'); }
+  $('histToggle').addEventListener('click', openHist);
+  $('histClose').addEventListener('click', closeHist);
+  histBackdrop.addEventListener('click', closeHist);
+
   /* ---- Réglages ---- */
   $('gearBtn').addEventListener('click', () => { if (session) $('setOverlay').classList.add('show'); });
   $('setClose').addEventListener('click', () => $('setOverlay').classList.remove('show'));
@@ -3198,13 +3237,6 @@ function runOperator(){
     await createSession(name, c);
   });
 
-  /* ---- Mise à l'échelle 800x1280 ---- */
-  function fit(){
-    $('stage').style.transform =
-      'scale(' + Math.min(window.innerWidth/800, window.innerHeight/1280) + ')';
-  }
-  window.addEventListener('resize', fit);
-  fit();
 }
 </script>
 </body>
